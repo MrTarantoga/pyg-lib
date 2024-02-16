@@ -53,11 +53,13 @@ class CMakeBuild(build_ext):
 
         WITH_CUDA = torch.cuda.is_available()
         WITH_CUDA = bool(int(os.getenv('FORCE_CUDA', WITH_CUDA)))
+        TORCH_CUDA_ARCH_LIST = os.environ["TORCH_CUDA_ARCH_LIST"]
 
         cmake_args = [
             '-DBUILD_TEST=OFF',
             '-DBUILD_BENCHMARK=OFF',
             '-DUSE_PYTHON=ON',
+            f'-DTORCH_CUDA_ARCH_LIST={TORCH_CUDA_ARCH_LIST}',
             f'-DWITH_CUDA={"ON" if WITH_CUDA else "OFF"}',
             f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}',
             f'-DCMAKE_BUILD_TYPE={self.build_type}',
@@ -65,7 +67,7 @@ class CMakeBuild(build_ext):
         ]
 
         if CMakeBuild.check_env_flag('USE_MKL_BLAS'):
-            include_dir = f"{sysconfig.get_path('data')}{os.sep}include"
+            include_dir = f"/usr/include/mkl"
             cmake_args.append(f'-DBLAS_INCLUDE_DIR={include_dir}')
             cmake_args.append('-DUSE_MKL_BLAS=ON')
 
