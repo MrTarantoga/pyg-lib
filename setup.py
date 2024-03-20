@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
         ]
 
         if CMakeBuild.check_env_flag('USE_MKL_BLAS'):
-            include_dir = f"/usr/include/mkl"
+            include_dir = f"/opt/intel/oneapi/mkl/2024.0/include/"
             cmake_args.append(f'-DBLAS_INCLUDE_DIR={include_dir}')
             cmake_args.append('-DUSE_MKL_BLAS=ON')
 
