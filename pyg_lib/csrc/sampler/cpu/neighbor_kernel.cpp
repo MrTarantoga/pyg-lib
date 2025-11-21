@@ -1,8 +1,7 @@
 #include <ATen/ATen.h>
 #include <ATen/Parallel.h>
+#include <parallel_hashmap/phmap.h>
 #include <torch/library.h>
-
-#include "parallel_hashmap/phmap.h"
 
 #include "pyg_lib/csrc/random/cpu/rand_engine.h"
 #include "pyg_lib/csrc/sampler/cpu/index_tracker.h"
@@ -96,6 +95,9 @@ class NeighborSampler {
       row_start = std::max(row_start, (scalar_t)(row_end - count));
     }
 
+    if (row_end - row_start == 0)
+      return;
+
     if (row_end - row_start > 1) {
       TORCH_CHECK(time[col_[row_start]] <= time[col_[row_end - 1]],
                   "Found invalid non-sorted temporal neighborhood");
@@ -128,6 +130,10 @@ class NeighborSampler {
     if (temporal_strategy_ == "last" && count >= 0) {
       row_start = std::max(row_start, (scalar_t)(row_end - count));
     }
+
+    if (row_end - row_start == 0)
+      return;
+
     if (row_end - row_start > 1) {
       TORCH_CHECK(time[row_start] <= time[row_end - 1],
                   "Found invalid non-sorted temporal neighborhood");
@@ -259,7 +265,7 @@ class NeighborSampler {
     else {
       at::Tensor index;
       if (replace) {
-        // at::multinomial only has good perfomance for `replace=true`, see:
+        // at::multinomial only has good performance for `replace=true`, see:
         // https://github.com/pytorch/pytorch/issues/11931
         index = at::multinomial(weight, count, replace);
       } else {
@@ -701,7 +707,7 @@ sample(const std::vector<node_type>& node_types,
       phmap::flat_hash_map<node_type, std::vector<node_t>>
           dst_sampled_nodes_dict;
       if (parallel) {
-        for (const auto& k : threads_edge_types) {  // Intialize empty vectors.
+        for (const auto& k : threads_edge_types) {  // Initialize empty vectors.
           dst_sampled_nodes_dict[!csc ? std::get<2>(k[0]) : std::get<0>(k[0])];
         }
       }

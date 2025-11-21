@@ -5,7 +5,7 @@ import torch.utils._pytree as pytree
 from torch import Tensor
 
 
-def pytreeify(cls):
+def _pytreeify(cls):
     r"""A pytree is Python nested data structure. It is a tree in the sense
     that nodes are Python collections (e.g., list, tuple, dict) and the leaves
     are Python values.
@@ -56,7 +56,7 @@ def pytreeify(cls):
     return cls
 
 
-@pytreeify
+@_pytreeify
 class GroupedMatmul(torch.autograd.Function):
     @staticmethod
     def forward(ctx, args: Tuple[Tensor]) -> Tuple[Tensor]:
@@ -96,8 +96,11 @@ class GroupedMatmul(torch.autograd.Function):
         return tuple(inputs_grad + others_grad)
 
 
-def grouped_matmul(inputs: List[Tensor], others: List[Tensor],
-                   biases: Optional[List[Tensor]] = None) -> List[Tensor]:
+def grouped_matmul(
+    inputs: List[Tensor],
+    others: List[Tensor],
+    biases: Optional[List[Tensor]] = None,
+) -> List[Tensor]:
     r"""Performs dense-dense matrix multiplication according to groups,
     utilizing dedicated kernels that effectively parallelize over groups.
 
@@ -114,16 +117,12 @@ def grouped_matmul(inputs: List[Tensor], others: List[Tensor],
         assert outs[1] == inputs[1] @ others[1]
 
     Args:
-        inputs (List[torch.Tensor]): List of left operand 2D matrices of shapes
-            :obj:`[N_i, K_i]`.
-        others (List[torch.Tensor]): List of right operand 2D matrices of
-            shapes :obj:`[K_i, M_i]`.
-        biases (List[torch.Tensor], optional): Optional bias terms to apply for
-            each element. (default: :obj:`None`)
+        inputs: List of left operand 2D matrices of shapes :obj:`[N_i, K_i]`.
+        others: List of right operand 2D matrices of shapes :obj:`[K_i, M_i]`.
+        biases: Optional bias terms to apply for each element.
 
     Returns:
-        List[torch.Tensor]: List of 2D output matrices of shapes
-        :obj:`[N_i, M_i]`.
+        List of 2D output matrices of shapes :obj:`[N_i, M_i]`.
     """
     # Combine inputs into a single tuple for autograd:
     outs = list(GroupedMatmul.apply(tuple(inputs + others)))
@@ -135,8 +134,12 @@ def grouped_matmul(inputs: List[Tensor], others: List[Tensor],
     return outs
 
 
-def segment_matmul(inputs: Tensor, ptr: Tensor, other: Tensor,
-                   bias: Optional[Tensor] = None) -> Tensor:
+def segment_matmul(
+    inputs: Tensor,
+    ptr: Tensor,
+    other: Tensor,
+    bias: Optional[Tensor] = None,
+) -> Tensor:
     r"""Performs dense-dense matrix multiplication according to segments along
     the first dimension of :obj:`inputs` as given by :obj:`ptr`, utilizing
     dedicated kernels that effectively parallelize over groups.
@@ -153,18 +156,14 @@ def segment_matmul(inputs: Tensor, ptr: Tensor, other: Tensor,
         assert out[5:8] == inputs[5:8] @ other[1]
 
     Args:
-        input (torch.Tensor): The left operand 2D matrix of shape
-            :obj:`[N, K]`.
-        ptr (torch.Tensor): Compressed vector of shape :obj:`[B + 1]`, holding
-            the boundaries of segments.
-            For best performance, given as a CPU tensor.
-        other (torch.Tensor): The right operand 3D tensor of shape
-            :obj:`[B, K, M]`.
-        bias (torch.Tensor, optional): Optional bias term of shape
-            :obj:`[B, M]` (default: :obj:`None`)
+        inputs: The left operand 2D matrix of shape :obj:`[N, K]`.
+        ptr: Compressed vector of shape :obj:`[B + 1]`, holding the boundaries
+            of segments. For best performance, given as a CPU tensor.
+        other: The right operand 3D tensor of shape :obj:`[B, K, M]`.
+        bias: The bias term of shape :obj:`[B, M]`.
 
     Returns:
-        torch.Tensor: The 2D output matrix of shape :obj:`[N, M]`.
+        The 2D output matrix of shape :obj:`[N, M]`.
     """
     out = torch.ops.pyg.segment_matmul(inputs, ptr, other)
     if bias is not None:
@@ -181,7 +180,7 @@ def sampled_add(
 ) -> Tensor:
     r"""Performs a sampled **addition** of :obj:`left` and :obj:`right`
     according to the indices specified in :obj:`left_index` and
-    :obj:`right_index`:
+    :obj:`right_index`.
 
     .. math::
         \textrm{out} = \textrm{left}[\textrm{left_index}] +
@@ -191,15 +190,13 @@ def sampled_add(
     being more runtime and memory-efficient.
 
     Args:
-        left (torch.Tensor): The left tensor.
-        right (torch.Tensor): The right tensor.
-        left_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`left` tensor. (default: :obj:`None`)
-        right_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`right` tensor. (default: :obj:`None`)
+        left: The left tensor.
+        right: The right tensor.
+        left_index: The values to sample from the :obj:`left` tensor.
+        right_index: The values to sample from the :obj:`right` tensor.
 
     Returns:
-        torch.Tensor: The output tensor.
+        The output tensor.
     """
     out = torch.ops.pyg.sampled_op(left, right, left_index, right_index, "add")
     return out
@@ -213,7 +210,7 @@ def sampled_sub(
 ) -> Tensor:
     r"""Performs a sampled **subtraction** of :obj:`left` by :obj:`right`
     according to the indices specified in :obj:`left_index` and
-    :obj:`right_index`:
+    :obj:`right_index`.
 
     .. math::
         \textrm{out} = \textrm{left}[\textrm{left_index}] -
@@ -223,15 +220,13 @@ def sampled_sub(
     being more runtime and memory-efficient.
 
     Args:
-        left (torch.Tensor): The left tensor.
-        right (torch.Tensor): The right tensor.
-        left_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`left` tensor. (default: :obj:`None`)
-        right_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`right` tensor. (default: :obj:`None`)
+        left: The left tensor.
+        right: The right tensor.
+        left_index: The values to sample from the :obj:`left` tensor.
+        right_index: The values to sample from the :obj:`right` tensor.
 
     Returns:
-        torch.Tensor: The output tensor.
+        The output tensor.
     """
     out = torch.ops.pyg.sampled_op(left, right, left_index, right_index, "sub")
     return out
@@ -245,7 +240,7 @@ def sampled_mul(
 ) -> Tensor:
     r"""Performs a sampled **multiplication** of :obj:`left` and :obj:`right`
     according to the indices specified in :obj:`left_index` and
-    :obj:`right_index`:
+    :obj:`right_index`.
 
     .. math::
         \textrm{out} = \textrm{left}[\textrm{left_index}] *
@@ -255,15 +250,13 @@ def sampled_mul(
     thus being more runtime and memory-efficient.
 
     Args:
-        left (torch.Tensor): The left tensor.
-        right (torch.Tensor): The right tensor.
-        left_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`left` tensor. (default: :obj:`None`)
-        right_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`right` tensor. (default: :obj:`None`)
+        left: The left tensor.
+        right: The right tensor.
+        left_index: The values to sample from the :obj:`left` tensor.
+        right_index: The values to sample from the :obj:`right` tensor.
 
     Returns:
-        torch.Tensor: The output tensor.
+        The output tensor.
     """
     out = torch.ops.pyg.sampled_op(left, right, left_index, right_index, "mul")
     return out
@@ -277,7 +270,7 @@ def sampled_div(
 ) -> Tensor:
     r"""Performs a sampled **division** of :obj:`left` by :obj:`right`
     according to the indices specified in :obj:`left_index` and
-    :obj:`right_index`:
+    :obj:`right_index`.
 
     .. math::
         \textrm{out} = \textrm{left}[\textrm{left_index}] /
@@ -287,15 +280,13 @@ def sampled_div(
     being more runtime and memory-efficient.
 
     Args:
-        left (torch.Tensor): The left tensor.
-        right (torch.Tensor): The right tensor.
-        left_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`left` tensor. (default: :obj:`None`)
-        right_index (torch.LongTensor, optional): The values to sample from the
-            :obj:`right` tensor. (default: :obj:`None`)
+        left: The left tensor.
+        right: The right tensor.
+        left_index: The values to sample from the :obj:`left` tensor.
+        right_index: The values to sample from the :obj:`right` tensor.
 
     Returns:
-        torch.Tensor: The output tensor.
+        The output tensor.
     """
     out = torch.ops.pyg.sampled_op(left, right, left_index, right_index, "div")
     return out
@@ -316,17 +307,16 @@ def index_sort(
         device.
 
     Args:
-        inputs (torch.Tensor): A vector with positive integer values.
-        max_value (int, optional): The maximum value stored inside
-            :obj:`inputs`. This value can be an estimation, but needs to be
-            greater than or equal to the real maximum. (default: :obj:`None`)
+        inputs: A vector with positive integer values.
+        max_value: The maximum value stored inside :obj:`inputs`. This value
+            can be an estimation, but needs to be greater than or equal to the
+            real maximum.
 
     Returns:
-        Tuple[torch.LongTensor, torch.LongTensor]:
         A tuple containing sorted values and indices of the elements in the
         original :obj:`input` tensor.
     """
-    if inputs.is_cuda or inputs.is_xpu:
+    if not inputs.is_cpu:
         return torch.sort(inputs)
     return torch.ops.pyg.index_sort(inputs, max_value)
 
@@ -342,16 +332,7 @@ def softmax_csr(
     :attr:`ptr`, and then proceeds to compute the softmax individually for
     each group.
 
-    Args:
-        src (Tensor): The source tensor.
-        ptr (LongTensor): Groups defined by CSR representation.
-        dim (int, optional): The dimension in which to normalize.
-            (default: :obj:`0`)
-
-    :rtype: :class:`Tensor`
-
     Examples:
-
         >>> src = torch.randn(4, 4)
         >>> ptr = torch.tensor([0, 4])
         >>> softmax(src, ptr)
@@ -359,6 +340,11 @@ def softmax_csr(
                 [0.1453, 0.2591, 0.5907, 0.2410],
                 [0.0598, 0.2923, 0.1206, 0.0921],
                 [0.7792, 0.3502, 0.1638, 0.2145]])
+
+    Args:
+        src: The source tensor.
+        ptr: Groups defined by CSR representation.
+        dim: The dimension in which to normalize.
     """
     dim = dim + src.dim() if dim < 0 else dim
     return torch.ops.pyg.softmax_csr(src, ptr, dim)

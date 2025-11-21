@@ -1,24 +1,26 @@
-[python-testing-image]: https://github.com/pyg-team/pyg-lib/actions/workflows/python_testing.yml/badge.svg
-[python-testing-url]: https://github.com/pyg-team/pyg-lib/actions/workflows/python_testing.yml
-[cpp-testing-image]: https://github.com/pyg-team/pyg-lib/actions/workflows/cpp_testing.yml/badge.svg
-[cpp-testing-url]: https://github.com/pyg-team/pyg-lib/actions/workflows/cpp_testing.yml
-[docs-image]: https://readthedocs.org/projects/pyg-lib/badge/?version=latest
-[docs-url]: https://pyg-lib.readthedocs.io/en/latest/?badge=latest
+[contributing-image]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat&color=4B26A4
+[contributing-url]: https://github.com/pyg-team/pytorch_geometric/blob/master/.github/CONTRIBUTING.md
 [coverage-image]: https://codecov.io/gh/pyg-team/pyg-lib/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/pyg-team/pyg-lib?branch=master
+[docs-image]: https://readthedocs.org/projects/pyg-lib/badge/?version=latest
+[docs-url]: https://pyg-lib.readthedocs.io/en/latest/?badge=latest
+[slack-image]: https://img.shields.io/badge/slack-join-white.svg?logo=slack&color=4B26A4
+[slack-url]: https://data.pyg.org/slack.html
 
 # pyg-lib
 
-[![Python Testing Status][python-testing-image]][python-testing-url]
-[![CPP Testing Status][cpp-testing-image]][cpp-testing-url]
+<div align="center">
+
 [![Docs Status][docs-image]][docs-url]
 [![Code Coverage][coverage-image]][coverage-url]
+[![Slack][slack-image]][slack-url]
+[![Contributing][contributing-image]][contributing-url]
 
-* [Installation](#installation)
+</div>
 
 ## Installation
 
-We provide pre-built Python wheels for all major OS/PyTorch/CUDA combinations from Python 3.8 till 3.12, see [here](https://data.pyg.org/whl).
+We provide pre-built Python wheels for all major OS/PyTorch/CUDA combinations from Python 3.10 till 3.13, see [here](https://data.pyg.org/whl).
 Note that currently, Windows wheels are not supported (we are working on fixing this as soon as possible).
 
 To install the wheels, simply run
@@ -29,44 +31,39 @@ pip install pyg-lib -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
 
 where
 
-* `${TORCH}` should be replaced by either `1.12.0`, `1.13.0`, `2.0.0`, `2.1.0`, or `2.2.0`
-* `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu113`, `cu116`, `cu117`, `cu118`, or `cu121`
+* `${TORCH}` should be replaced by either `2.6.0`, `2.7.0`, `2.8.0`, or `2.9.0`
+* `${CUDA}` should be replaced by either `cpu`, `cu118`, `cu124`, `cu126`, `cu128`, `cu129`, or `cu130`
 
 The following combinations are supported:
 
-| PyTorch 2.2  | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` | `cu118` | `cu121` |
+| PyTorch 2.9  | `cpu` | `cu118` | `cu124` | `cu126` | `cu128` | `cu129` | `cu130` |
 |--------------|-------|---------|---------|---------|---------|---------|---------|
-| **Linux**    | ✅    |         |         |         |         | ✅      | ✅      |
-| **Windows**  |       |         |         |         |         |         |         |
-| **macOS**    | ✅    |         |         |         |         |         |         |
+| **Linux**    | ✅    |         |         | ✅      | ✅      |       | ✅      |
+| **Windows**  | ✅    |         |         | ✅      | ✅      |       | ✅      |
+| **macOS**    | ✅    |         |         |         |         |        |        |
 
-| PyTorch 2.1  | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` | `cu118` | `cu121` |
+| PyTorch 2.8  | `cpu` | `cu118` | `cu124` | `cu126` | `cu128` | `cu129` | `cu130` |
 |--------------|-------|---------|---------|---------|---------|---------|---------|
-| **Linux**    | ✅    |         |         |         |         | ✅      | ✅      |
-| **Windows**  |       |         |         |         |         |         |         |
-| **macOS**    | ✅    |         |         |         |         |         |         |
+| **Linux**    | ✅    |         |         | ✅      | ✅      | ✅      |       |
+| **Windows**  | ✅    |         |         | ✅      | ✅      | ✅      |       |
+| **macOS**    | ✅    |         |         |         |         |        |        |
 
-| PyTorch 2.0  | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` | `cu118` | `cu121` |
+| PyTorch 2.7  | `cpu` | `cu118` | `cu124` | `cu126` | `cu128` | `cu129` | `cu130` |
 |--------------|-------|---------|---------|---------|---------|---------|---------|
-| **Linux**    | ✅    |         |         |         | ✅      | ✅      |         |
-| **Windows**  |       |         |         |         |         |         |         |
-| **macOS**    | ✅    |         |         |         |         |         |         |
+| **Linux**    | ✅    | ✅      |         | ✅      | ✅      |         |       |
+| **Windows**  | ✅    | ✅      |         | ✅      | ✅      |         |       |
+| **macOS**    | ✅    |         |         |         |         |         |        |
 
-| PyTorch 1.13 | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` | `cu118` | `cu121` |
+| PyTorch 2.6  | `cpu` | `cu118` | `cu124` | `cu126` | `cu128` | `cu129` | `cu130` |
 |--------------|-------|---------|---------|---------|---------|---------|---------|
-| **Linux**    | ✅    |         |         | ✅      | ✅      |         |         |
-| **Windows**  |       |         |         |         |         |         |         |
-| **macOS**    | ✅    |         |         |         |         |         |         |
+| **Linux**    | ✅    | ✅      | ✅      | ✅      |         |         |       |
+| **Windows**  | ✅    | ✅      | ✅      | ✅      |         |         |       |
+| **macOS**    | ✅    |         |         |         |         |         |        |
 
-| PyTorch 1.12 | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` | `cu118` | `cu121` |
-|--------------|-------|---------|---------|---------|---------|---------| --------|
-| **Linux**    | ✅    | ✅      | ✅      | ✅      |         |         |         |
-| **Windows**  |       |         |         |         |         |         |         |
-| **macOS**    | ✅    |         |         |         |         |         |         |
 
-### Form nightly
+### From nightly
 
-Nightly wheels are provided for Linux from Python 3.8 till 3.12:
+Nightly wheels are provided for Linux from Python 3.10 till 3.13:
 
 ```
 pip install pyg-lib -f https://data.pyg.org/whl/nightly/torch-${TORCH}+${CUDA}.html
@@ -76,5 +73,5 @@ pip install pyg-lib -f https://data.pyg.org/whl/nightly/torch-${TORCH}+${CUDA}.h
 
 ```
 pip install ninja wheel
-pip install git+https://github.com/pyg-team/pyg-lib.git
+pip install --no-build-isolation git+https://github.com/pyg-team/pyg-lib.git
 ```

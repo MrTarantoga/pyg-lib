@@ -1,8 +1,7 @@
 #include <ATen/ATen.h>
 #include <ATen/Parallel.h>
+#include <parallel_hashmap/phmap.h>
 #include <torch/library.h>
-
-#include "parallel_hashmap/phmap.h"
 
 #include "pyg_lib/csrc/sampler/cpu/mapper.h"
 #include "pyg_lib/csrc/utils/cpu/convert.h"
@@ -110,7 +109,7 @@ merge_outputs(
       }
     });
 
-    // Remove auxilary -1 numbers:
+    // Remove auxiliary -1 numbers:
     auto neg =
         std::remove(sampled_node_ids.begin(), sampled_node_ids.end(), -1);
     sampled_node_ids.erase(neg, sampled_node_ids.end());

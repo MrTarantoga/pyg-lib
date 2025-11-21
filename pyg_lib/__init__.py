@@ -5,21 +5,16 @@ import warnings
 
 import torch
 
-import pyg_lib.ops  # noqa
-import pyg_lib.sampler  # noqa
-import pyg_lib.partition  # noqa
+from pyg_lib.home import get_home_dir, set_home_dir
 
-from .home import get_home_dir, set_home_dir
-
-__version__ = '0.4.0'
+__version__ = '0.6.0'
 
 # * `libpyg.so`: The name of the shared library file.
 # * `torch.ops.pyg`: The used namespace.
 # * `pyg_lib`: The name of the Python package.
-# TODO Make naming more consistent.
 
 
-def load_library(lib_name: str):
+def load_library(lib_name: str) -> None:
     if bool(os.getenv('BUILD_DOCS', 0)):
         return
 
@@ -38,12 +33,16 @@ def load_library(lib_name: str):
 
 load_library('libpyg')
 
+import pyg_lib.ops  # noqa
+import pyg_lib.partition  # noqa
+import pyg_lib.sampler  # noqa
+
 
 def cuda_version() -> int:
     r"""Returns the CUDA version for which :obj:`pyg_lib` was compiled with.
 
     Returns:
-        (int): The CUDA version.
+        The CUDA version.
     """
     return torch.ops.pyg.cuda_version()
 
